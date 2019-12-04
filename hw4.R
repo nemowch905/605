@@ -1,12 +1,21 @@
 rm(list=ls())
-library("MASS")
-library("plotrix")
-library("astro")
 
-args = (commandArgs)
+args = (commandArgs(trailingOnly=TRUE))
+if(length(args) == 2){
+  temp = args[1]
+  folder = args[2]
+} else {
+  cat('usage: Rscript hw4.R <template spectrum> <data directory.\n', file=stderr())
+  stop()
+}
+if (require("astro")) {
+  print("loaded package astro")
+} else {
+  print("failed to load package astro")
+}
 dir = getwd()
-cb58 = read.fitstab(paste(dir,"/cB58_Lyman_break.fit",sep = ""))
-setwd(paste(dir,"/data",sep = ""))
+cb58 = read.fitstab(paste(dir,"/",temp,sep = ""))
+setwd(paste(dir,"/",folder,sep = ""))
 cb58[,2] = scale(cb58[,2])
 files=list.files()
 distance = c()
@@ -28,6 +37,7 @@ distance = distance[order(distance)]
 shift = shift[order(distance)]
 data = data.frame(distance=distance,spectrumID=files,i=shift)
 setwd(dir)
-write.csv(data,file = "hw2.csv",row.names = F)
+name = paste(folder,".csv",sep = "")
+write.csv(data[1:100,],name,row.names = F)
 
 
